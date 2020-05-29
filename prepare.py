@@ -84,7 +84,29 @@ def prep_article(df):
     df.drop(columns=['content'], inplace=True)
     return df
 
+def prep_news(df):
+    df['category'] = df.topic
+    df['title'] = df.title
+    df['author'] = df.author
+    df['original'] = df.content
+    df['stemmed'] = df.content.apply(basic_clean).apply(stem)
+    df['lemmatized'] = df.content.apply(basic_clean).apply(lemmatize)
+    df['clean'] = df.content.apply(basic_clean).apply(remove_stopwords)
+    df.drop(columns=['content'], inplace=True)
+    return df
 
-
+# The full shebang!
+def get_article_data():
+    urls = acquire.get_all_urls()
+    un_prepped_df = acquire.get_blogs(urls)
+    prepped_df = prep_article(un_prepped_df)
+    return prepped_df
+    
+    
+def get_news_data():
+    un_prepped = acquire.get_news_articles()
+    prepped = prep_news(un_prepped)
+    return prepped
+    
     
     

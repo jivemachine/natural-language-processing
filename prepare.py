@@ -66,17 +66,25 @@ def remove_stopwords(string, extra_words=[], exclude_words=[]):
     
     # Adding/Filtering extra words to stopword list
     words = string.split()
-    stopword_list = stopword_list + extra_words
-    stopword_list = stopword_list - exclude_words
-    filtered_words = [w for w in words if w not in stopword_list]
+    stopword_list = set(stopword_list) - set(exclude_words)
+    stopword_list = stopword_list.union(set(extra_words))
     
-    # Now we remove the stop words from our string
-    print('Removed {} stopwords'.format(len(words) - len(filtered_words)))
-    print('---')
+    filtered_words = [w for w in words if w not in stopword_list]
 
     string_without_stopwords = ' '.join(filtered_words)
 
     return string_without_stopwords
+
+def prep_article(df):
+    df['title'] = df.title
+    df['original'] = df.content
+    df['stemmed'] = df.content.apply(basic_clean).apply(stem)
+    df['lemmatized'] = df.content.apply(basic_clean).apply(lemmatize)
+    df['clean'] = df.content.apply(basic_clean).apply(remove_stopwords)
+    df.drop(columns=['content'], inplace=True)
+    return df
+
+
 
     
     
